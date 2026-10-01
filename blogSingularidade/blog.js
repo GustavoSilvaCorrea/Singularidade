@@ -1,123 +1,51 @@
-console.log('blog.js v3 carregado');
+console.log('blog.js v4 — hub do diário');
 
-// ── Login (esquema simples, sem senha guardada em lugar nenhum: veio pela URL) ──
 const params = new URLSearchParams(window.location.search);
 const usuario = params.get('usuario');
 
 if (!usuario) {
-    window.location.href = 'index.html';
+    window.location.href = './index.html';
 }
+
+const supabaseClient = window.supabaseClient;
+const pagina = document.body.dataset.pagina || 'diario';
+const BUCKET_IMAGENS = window.SUPABASE_BUCKET_IMAGENS || 'blog-imagens';
 
 const nomeUsuarioEl = document.getElementById('nome-usuario');
-if (nomeUsuarioEl) nomeUsuarioEl.textContent = usuario;
+if (nomeUsuarioEl) nomeUsuarioEl.textContent = usuario || '—';
 
-// mesma lista de contas do login.js — usada nas caixinhas de "quem pode ver"
-const PERSONAGENS = ['Harvey', 'Maggie', 'Liam', 'Rik', 'Nicollo', 'Leano'];
-
-const formPost = document.getElementById('form-post');
-const listaDocumentos = document.getElementById('lista-documentos');
-const listaImagensInput = document.getElementById('lista-imagens-input');
-const botaoAddImagem = document.getElementById('add-imagem');
-const barraPastas = document.getElementById('barra-pastas');
-const pastaPostSelect = document.getElementById('pasta-post');
-const visTodosCheckbox = document.getElementById('vis-todos');
-const listaPersonagensVis = document.getElementById('lista-personagens-vis');
-const botaoCancelarEdicao = document.getElementById('cancelar-edicao');
-const botaoPublicar = formPost.querySelector('.btn-selo');
-
-let postsCache = [];
 let pastasCache = [];
-let pastaAtivaId = null;
-let editandoId = null;
-let contadorImagem = 0;
+let postsCache = [];
+let pastaAtual = null;
 
-// ── caixinhas de personagem pra "Classificação de Acesso" ──
-PERSONAGENS.forEach((nome) => {
-    const label = document.createElement('label');
-    label.className = 'opcao-checkbox';
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.className = 'checkbox-personagem';
-    input.value = nome;
-    label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + nome));
-    listaPersonagensVis.appendChild(label);
-});
+function urlComUsuario(caminho, extras = {}) {
+    const url = new URL(caminho, window.location.href);
+    url.searchParams.set('usuario', usuario);
 
-function atualizarEstadoCheckboxesPersonagens() {
-    const publico = visTodosCheckbox.checked;
-    listaPersonagensVis.style.display = publico ? 'none' : 'flex';
-    if (publico) {
-        document.querySelectorAll('.checkbox-personagem').forEach((cb) => { cb.checked = false; });
-    }
-}
-visTodosCheckbox.addEventListener('change', atualizarEstadoCheckboxesPersonagens);
-atualizarEstadoCheckboxesPersonagens();
-
-function obterVisibilidadeSelecionada() {
-    if (visTodosCheckbox.checked) return null; // null = público, todo mundo vê
-    const selecionados = Array.from(document.querySelectorAll('.checkbox-personagem:checked')).map((cb) => cb.value);
-    if (!selecionados.includes(usuario)) selecionados.push(usuario); // autor sempre enxerga o próprio documento
-    return selecionados;
-}
-
-function podeVer(post) {
-    if (!post.visivel_para || post.visivel_para.length === 0) return true;
-    return post.visivel_para.includes(usuario) || post.autor === usuario;
-}
-
-// ── linhas dinâmicas de imagem no formulário ──
-function ligarBotaoRemover(linha, input, botaoRemover) {
-    botaoRemover.addEventListener('click', () => {
-        if (listaImagensInput.children.length > 1) {
-            linha.remove();
-        } else {
-            input.value = '';
+    Object.entries(extras).forEach(([chave, valor]) => {
+        if (valor !== null && valor !== undefined && valor !== '') {
+            url.searchParams.set(chave, valor);
         }
     });
+
+    return url.pathname.split('/').pop() + url.search;
 }
 
-function criarLinhaImagem(valor = '') {
-    const linha = document.createElement('div');
-    linha.className = 'linha-imagem';
+function configurarNavegacao() {
+    const home = urlComUsuario('./home.html');
+    const diario = urlComUsuario('./blog.html');
 
-    const input = document.createElement('input');
-    input.type = 'url';
-    input.className = 'campo-imagem';
-    input.placeholder = 'https://...';
-    input.value = valor;
+    const voltarHome = document.getElementById('voltar-home');
+    const breadcrumbHome = document.getElementById('breadcrumb-home');
+    const breadcrumbDiario = document.getElementById('breadcrumb-diario');
+    const linkNovo = document.getElementById('link-novo-documento');
 
-    const botaoRemover = document.createElement('button');
-    botaoRemover.type = 'button';
-    botaoRemover.className = 'remover-imagem';
-    botaoRemover.setAttribute('aria-label', 'Remover imagem');
-    botaoRemover.textContent = '×';
-
-    ligarBotaoRemover(linha, input, botaoRemover);
-
-    linha.appendChild(input);
-    linha.appendChild(botaoRemover);
-    listaImagensInput.appendChild(linha);
+    if (voltarHome) voltarHome.href = home;
+    if (breadcrumbHome) breadcrumbHome.href = home;
+    if (breadcrumbDiario) breadcrumbDiario.href = diario;
+    if (linkNovo) linkNovo.href = urlComUsuario('./registro.html');
 }
 
-listaImagensInput.querySelectorAll('.linha-imagem').forEach((linha) => {
-    const input = linha.querySelector('.campo-imagem');
-    const botaoRemover = linha.querySelector('.remover-imagem');
-    if (input && botaoRemover) ligarBotaoRemover(linha, input, botaoRemover);
-});
-
-botaoAddImagem.addEventListener('click', () => criarLinhaImagem());
-
-function resetarLinhasImagem(urls = []) {
-    listaImagensInput.innerHTML = '';
-    if (urls.length) {
-        urls.forEach((url) => criarLinhaImagem(url));
-    } else {
-        criarLinhaImagem();
-    }
-}
-
-// ── utilidades de exibição ──
 function escapeHtml(texto) {
     const div = document.createElement('div');
     div.textContent = texto ?? '';
@@ -125,250 +53,506 @@ function escapeHtml(texto) {
 }
 
 function formatarData(isoString) {
-    return new Date(isoString).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    if (!isoString) return 'data desconhecida';
+
+    return new Date(isoString).toLocaleString('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+    });
+}
+
+function podeVer(post) {
+    if (!post.visivel_para || post.visivel_para.length === 0) return true;
+    return post.visivel_para.includes(usuario) || post.autor === usuario;
+}
+
+function podeAlterarPost(post) {
+    return post.autor === usuario || usuario.toLowerCase() === 'adm';
+}
+
+function podeExcluirPasta(pasta) {
+    return pasta.criado_por === usuario || usuario.toLowerCase() === 'adm';
+}
+
+function obterUrlsImagens(post) {
+    if (post.imagens && post.imagens.length) return post.imagens;
+    if (post.imagem_url) return [post.imagem_url];
+    return [];
+}
+
+function caminhoStorageDaUrl(url) {
+    const marcador = `/storage/v1/object/public/${BUCKET_IMAGENS}/`;
+    const indice = url.indexOf(marcador);
+
+    if (indice === -1) return null;
+
+    return decodeURIComponent(
+        url.slice(indice + marcador.length).split('?')[0]
+    );
+}
+
+async function limparImagensStorage(post) {
+    if (!supabaseClient) return;
+
+    const caminhos = obterUrlsImagens(post)
+        .map(caminhoStorageDaUrl)
+        .filter(Boolean);
+
+    if (!caminhos.length) return;
+
+    const { error } = await supabaseClient
+        .storage
+        .from(BUCKET_IMAGENS)
+        .remove(caminhos);
+
+    if (error) {
+        // A exclusão do documento não deve falhar por causa de limpeza de mídia.
+        console.warn('Não foi possível remover algumas imagens do Storage:', error);
+    }
 }
 
 function renderizarImagens(post) {
-    const urls = (post.imagens && post.imagens.length)
-        ? post.imagens
-        : (post.imagem_url ? [post.imagem_url] : []); // compatível com posts antigos
+    const urls = obterUrlsImagens(post);
 
-    return urls.map((url) => {
-        const lado = contadorImagem % 2 === 0 ? 'direita' : 'esquerda';
-        contadorImagem += 1;
-        return `<img class="documento-imagem documento-imagem-${lado}" src="${escapeHtml(url)}" alt="${escapeHtml(post.titulo)}">`;
-    }).join('');
-}
-
-// ── Supabase (opcional — se não estiver configurado, o formulário continua usável) ──
-const SUPABASE_URL = 'https://rvjzqkbsutrbrpufbyiu.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2anpxa2JzdXRyYnJwdWZieWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNDk5ODAsImV4cCI6MjA5OTcyNTk4MH0.IkRhmcK-I69lmhOOjKhzNqJEBe8LRypQOg3KAeJjpj4';
-
-let supabaseClient = null;
-try {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch (erro) {
-    console.warn('Supabase ainda não configurado em blog.js (confira SUPABASE_ANON_KEY):', erro);
-}
-
-// ── pastas ──
-function renderizarPilulasPastas() {
-    const pilulasExistentes = pastasCache.map((pasta) => `
-        <button type="button" class="pilula-pasta${pastaAtivaId === pasta.id ? ' ativa' : ''}" data-pasta="${pasta.id}">${escapeHtml(pasta.nome)}</button>
-    `).join('');
-
-    barraPastas.innerHTML = `
-        <button type="button" class="pilula-pasta${!pastaAtivaId ? ' ativa' : ''}" data-pasta="">Todos os documentos</button>
-        ${pilulasExistentes}
-        <button type="button" class="pilula-pasta pilula-nova" id="nova-pasta">+ nova pasta</button>
-    `;
-}
-
-function renderizarOpcoesPastaSelect() {
-    const selecionado = pastaPostSelect.value;
-    pastaPostSelect.innerHTML = '<option value="">Sem pasta</option>' +
-        pastasCache.map((pasta) => `<option value="${pasta.id}">${escapeHtml(pasta.nome)}</option>`).join('');
-    if (Array.from(pastaPostSelect.options).some((o) => o.value === selecionado)) {
-        pastaPostSelect.value = selecionado;
-    }
-}
-
-async function carregarPastas() {
-    if (!supabaseClient) return;
-    const { data, error } = await supabaseClient.from('pastas').select('*').order('nome', { ascending: true });
-    if (error) {
-        console.error('Erro ao carregar pastas:', error);
-        return;
-    }
-    pastasCache = data || [];
-    renderizarPilulasPastas();
-    renderizarOpcoesPastaSelect();
-}
-
-barraPastas.addEventListener('click', async (evento) => {
-    if (evento.target.closest('#nova-pasta')) {
-        const nome = prompt('Nome da nova pasta:');
-        if (!nome || !nome.trim() || !supabaseClient) return;
-        const { error } = await supabaseClient.from('pastas').insert({ nome: nome.trim(), criado_por: usuario });
-        if (error) {
-            console.error('Erro ao criar pasta:', error);
-            alert('Não deu pra criar a pasta — veja o console (F12).');
-            return;
-        }
-        await carregarPastas();
-        return;
-    }
-
-    const pilula = evento.target.closest('.pilula-pasta');
-    if (!pilula) return;
-    pastaAtivaId = pilula.dataset.pasta || null;
-    renderizarPilulasPastas();
-    renderizarPosts();
-});
-
-// ── posts ──
-function renderizarPosts() {
-    const visiveis = postsCache.filter((post) => podeVer(post) && (!pastaAtivaId || post.pasta_id === pastaAtivaId));
-
-    if (!visiveis.length) {
-        listaDocumentos.innerHTML = '<p class="carregando">Nenhum documento aqui ainda.</p>';
-        return;
-    }
-
-    contadorImagem = 0;
-
-    listaDocumentos.innerHTML = visiveis.map((post) => {
-        const selo = post.categoria ? `<span class="selo">${escapeHtml(post.categoria)}</span>` : '';
-        const restrito = (post.visivel_para && post.visivel_para.length) ? '<span class="marca-privado">Acesso restrito</span>' : '';
-        const pasta = pastasCache.find((p) => p.id === post.pasta_id);
-        const meuPost = post.autor === usuario;
-
-        const acoes = meuPost ? `
-            <div class="documento-acoes">
-                <button type="button" class="acao-editar" data-id="${post.id}">editar</button>
-                <button type="button" class="acao-excluir" data-id="${post.id}">excluir</button>
-            </div>
-        ` : '';
+    return urls.map((url, indice) => {
+        const lado = indice % 2 === 0 ? 'direita' : 'esquerda';
 
         return `
-            <article class="documento" data-id="${post.id}">
-                <div class="documento-topo">
-                    <h2>Documento: ${escapeHtml(post.titulo)}</h2>
-                    ${selo}
-                </div>
-                <p class="documento-meta">Registrado por <strong>${escapeHtml(post.autor)}</strong> · ${formatarData(post.criado_em)}${pasta ? ' · ' + escapeHtml(pasta.nome) : ''} ${restrito}</p>
-                <div class="documento-corpo">
-                    ${renderizarImagens(post)}
-                    <p class="documento-texto">${escapeHtml(post.conteudo)}</p>
-                </div>
-                ${acoes}
-            </article>
+            <img
+                class="documento-imagem documento-imagem-${lado}"
+                src="${escapeHtml(url)}"
+                alt="${escapeHtml(post.titulo)}"
+                loading="lazy"
+            >
         `;
     }).join('');
 }
 
-async function carregarPosts() {
+function resumirConteudo(texto, limite = 280) {
+    const limpo = (texto || '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (limpo.length <= limite) return limpo;
+
+    return `${limpo.slice(0, limite).trimEnd()}…`;
+}
+
+function renderizarDocumento(post) {
+    const pasta = pastasCache.find((item) => item.id === post.pasta_id);
+    const restrito = post.visivel_para && post.visivel_para.length;
+    const podeAlterar = podeAlterarPost(post);
+    const imagens = obterUrlsImagens(post);
+    const urlLeitura = urlComUsuario(
+        './leitura.html',
+        { arquivo: post.id }
+    );
+
+    const acoesAlteracao = podeAlterar
+        ? `
+            <a
+                class="link-editar-documento"
+                href="${urlComUsuario('./registro.html', { editar: post.id })}"
+            >
+                editar
+            </a>
+
+            <button
+                type="button"
+                class="acao-excluir"
+                data-post-id="${post.id}"
+            >
+                excluir
+            </button>
+        `
+        : '';
+
+    const miniatura = imagens.length
+        ? `
+            <img
+                class="documento-imagem documento-imagem-direita"
+                src="${escapeHtml(imagens[0])}"
+                alt=""
+                loading="lazy"
+            >
+        `
+        : '';
+
+    return `
+        <article
+            class="documento documento-resumo documento-clicavel"
+            data-id="${post.id}"
+            data-abrir-post="${post.id}"
+            tabindex="0"
+            role="link"
+            aria-label="Abrir documento ${escapeHtml(post.titulo)}"
+        >
+            <div class="documento-topo">
+                <h2>Documento: ${escapeHtml(post.titulo)}</h2>
+                ${post.categoria ? `<span class="selo">${escapeHtml(post.categoria)}</span>` : ''}
+            </div>
+
+            <p class="documento-meta">
+                Registrado por <strong>${escapeHtml(post.autor)}</strong>
+                · ${formatarData(post.criado_em)}
+                ${pasta ? ` · ${escapeHtml(pasta.nome)}` : ''}
+                ${restrito ? ' · <span class="marca-privado">Acesso restrito</span>' : ''}
+            </p>
+
+            <div class="documento-corpo">
+                ${miniatura}
+                <p class="documento-texto documento-texto-resumo">
+                    ${escapeHtml(resumirConteudo(post.conteudo))}
+                </p>
+            </div>
+
+            <div class="documento-acoes">
+                <a
+                    class="link-editar-documento link-abrir-documento"
+                    href="${urlLeitura}"
+                >
+                    abrir arquivo
+                </a>
+
+                ${acoesAlteracao}
+            </div>
+        </article>
+    `;
+}
+
+async function carregarDados() {
     if (!supabaseClient) {
-        listaDocumentos.innerHTML = '<p class="carregando">Supabase não configurado neste arquivo ainda.</p>';
-        return;
+        throw new Error('Supabase não foi iniciado.');
     }
 
-    const { data, error } = await supabaseClient.from('posts').select('*').order('criado_em', { ascending: false });
+    const [pastasResultado, postsResultado] = await Promise.all([
+        supabaseClient
+            .from('pastas')
+            .select('*')
+            .order('nome', { ascending: true }),
+
+        supabaseClient
+            .from('posts')
+            .select('*')
+            .order('criado_em', { ascending: false })
+    ]);
+
+    if (pastasResultado.error) throw pastasResultado.error;
+    if (postsResultado.error) throw postsResultado.error;
+
+    pastasCache = pastasResultado.data || [];
+    postsCache = postsResultado.data || [];
+}
+
+async function criarPasta() {
+    const nome = prompt('Nome da nova pasta:');
+
+    if (!nome || !nome.trim() || !supabaseClient) return;
+
+    const { error } = await supabaseClient
+        .from('pastas')
+        .insert({
+            nome: nome.trim(),
+            criado_por: usuario
+        });
 
     if (error) {
-        listaDocumentos.innerHTML = '<p class="carregando">Erro ao carregar os registros — veja o console (F12).</p>';
-        console.error('Erro ao carregar posts:', error);
+        console.error('Erro ao criar pasta:', error);
+        alert('Não foi possível criar a pasta. Veja o console (F12).');
         return;
     }
 
-    postsCache = data || [];
-    renderizarPosts();
+    await atualizarTela();
 }
 
-// ── editar / excluir ──
-function iniciarEdicao(id) {
-    const post = postsCache.find((p) => p.id === id);
-    if (!post) return;
+async function excluirPasta(id) {
+    const pasta = pastasCache.find((item) => item.id === id);
 
-    editandoId = id;
-    document.getElementById('titulo-post').value = post.titulo || '';
-    document.getElementById('categoria-post').value = post.categoria || '';
-    document.getElementById('conteudo-post').value = post.conteudo || '';
-    pastaPostSelect.value = post.pasta_id || '';
+    if (!pasta || !podeExcluirPasta(pasta)) return;
 
-    const urls = (post.imagens && post.imagens.length) ? post.imagens : (post.imagem_url ? [post.imagem_url] : []);
-    resetarLinhasImagem(urls);
+    const quantidade = postsCache.filter(
+        (post) => post.pasta_id === id
+    ).length;
 
-    const restrito = Boolean(post.visivel_para && post.visivel_para.length);
-    visTodosCheckbox.checked = !restrito;
-    atualizarEstadoCheckboxesPersonagens();
-    document.querySelectorAll('.checkbox-personagem').forEach((input) => {
-        input.checked = restrito ? post.visivel_para.includes(input.value) : false;
-    });
+    const texto = quantidade
+        ? `Excluir a pasta "${pasta.nome}"?\n\nOs ${quantidade} documento(s) dentro dela NÃO serão apagados. Eles passarão a aparecer como arquivos avulsos.`
+        : `Excluir a pasta "${pasta.nome}"?`;
 
-    botaoPublicar.textContent = 'Salvar alterações';
-    botaoCancelarEdicao.hidden = false;
-    formPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!confirm(texto)) return;
+
+    // Primeiro tira os documentos da pasta, para nunca apagar conteúdo do RPG.
+    const mover = await supabaseClient
+        .from('posts')
+        .update({ pasta_id: null })
+        .eq('pasta_id', id);
+
+    if (mover.error) {
+        console.error('Erro ao retirar documentos da pasta:', mover.error);
+        alert('Não foi possível preparar a exclusão da pasta. Veja o console (F12).');
+        return;
+    }
+
+    const apagar = await supabaseClient
+        .from('pastas')
+        .delete()
+        .eq('id', id);
+
+    if (apagar.error) {
+        console.error('Erro ao excluir pasta:', apagar.error);
+        alert('Não foi possível excluir a pasta. Veja o console (F12).');
+        return;
+    }
+
+    if (pagina === 'pasta') {
+        window.location.href = urlComUsuario('./blog.html');
+        return;
+    }
+
+    await atualizarTela();
 }
-
-function cancelarEdicao() {
-    editandoId = null;
-    formPost.reset();
-    resetarLinhasImagem();
-    pastaPostSelect.value = '';
-    visTodosCheckbox.checked = true;
-    atualizarEstadoCheckboxesPersonagens();
-    botaoPublicar.textContent = 'Publicar';
-    botaoCancelarEdicao.hidden = true;
-}
-botaoCancelarEdicao.addEventListener('click', cancelarEdicao);
 
 async function excluirPost(id) {
-    if (!supabaseClient) return;
-    if (!confirm('Apagar este documento? Essa ação não pode ser desfeita.')) return;
+    const post = postsCache.find((item) => item.id === id);
 
-    const { error } = await supabaseClient.from('posts').delete().eq('id', id);
-    if (error) {
-        console.error('Erro ao apagar:', error);
-        alert('Não deu pra apagar — veja o console (F12).');
+    if (!post || !podeAlterarPost(post)) return;
+
+    if (!confirm('Apagar este documento? Essa ação não pode ser desfeita.')) {
         return;
     }
-    if (editandoId === id) cancelarEdicao();
-    await carregarPosts();
+
+    const { error } = await supabaseClient
+        .from('posts')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('Erro ao excluir documento:', error);
+        alert('Não foi possível excluir o documento. Veja o console (F12).');
+        return;
+    }
+
+    await limparImagensStorage(post);
+    await atualizarTela();
 }
 
-listaDocumentos.addEventListener('click', (evento) => {
-    const btnEditar = evento.target.closest('.acao-editar');
-    if (btnEditar) { iniciarEdicao(btnEditar.dataset.id); return; }
+function renderizarHub() {
+    const grade = document.getElementById('grade-pastas');
+    const listaAvulsos = document.getElementById('lista-documentos-avulsos');
 
-    const btnExcluir = evento.target.closest('.acao-excluir');
-    if (btnExcluir) { excluirPost(btnExcluir.dataset.id); }
-});
+    const postsVisiveis = postsCache.filter(podeVer);
 
-// ── publicar / salvar ──
-formPost.addEventListener('submit', async (evento) => {
-    evento.preventDefault();
+    if (grade) {
+        if (!pastasCache.length) {
+            grade.innerHTML = `
+                <p class="estado-vazio">
+                    Nenhuma pasta criada ainda. Use “+ Nova pasta” para começar.
+                </p>
+            `;
+        } else {
+            grade.innerHTML = pastasCache.map((pasta, indice) => {
+                const quantidade = postsVisiveis.filter(
+                    (post) => post.pasta_id === pasta.id
+                ).length;
 
-    if (!supabaseClient) {
-        alert('Supabase não está configurado em blog.js ainda (SUPABASE_ANON_KEY) — não dá pra publicar.');
+                const excluir = podeExcluirPasta(pasta)
+                    ? `
+                        <button
+                            type="button"
+                            class="pasta-excluir"
+                            data-excluir-pasta="${pasta.id}"
+                            title="Excluir pasta"
+                            aria-label="Excluir pasta ${escapeHtml(pasta.nome)}"
+                        >
+                            ×
+                        </button>
+                    `
+                    : '';
+
+                return `
+                    <article class="pasta-card">
+                        <div class="pasta-card-topo">
+                            <a
+                                class="pasta-link"
+                                href="${urlComUsuario('./pasta.html', { pasta: pasta.id })}"
+                            >
+                                <span class="pasta-codigo">
+                                    DIRETÓRIO // ${String(indice + 1).padStart(2, '0')}
+                                </span>
+
+                                <h3>${escapeHtml(pasta.nome)}</h3>
+
+                                <p class="pasta-card-meta">
+                                    ${quantidade} arquivo(s) visível(is)
+                                    · criado por ${escapeHtml(pasta.criado_por || 'desconhecido')}
+                                </p>
+                            </a>
+
+                            ${excluir}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+    }
+
+    if (listaAvulsos) {
+        const avulsos = postsVisiveis.filter((post) => !post.pasta_id);
+
+        listaAvulsos.innerHTML = avulsos.length
+            ? avulsos.map(renderizarDocumento).join('')
+            : `
+                <p class="estado-vazio">
+                    Nenhum arquivo avulso. Documentos sem pasta aparecerão aqui.
+                </p>
+            `;
+    }
+}
+
+function renderizarPasta() {
+    const pastaId = params.get('pasta');
+    const titulo = document.getElementById('titulo-pasta');
+    const meta = document.getElementById('meta-pasta');
+    const lista = document.getElementById('lista-documentos-pasta');
+    const contador = document.getElementById('contador-arquivos');
+    const excluir = document.getElementById('excluir-pasta');
+    const novoNaPasta = document.getElementById('novo-na-pasta');
+    const breadcrumbPasta = document.getElementById('breadcrumb-pasta');
+
+    pastaAtual = pastasCache.find((item) => item.id === pastaId) || null;
+
+    if (!pastaAtual) {
+        if (titulo) titulo.textContent = 'Pasta não encontrada';
+        if (meta) meta.textContent = 'Este diretório não existe mais.';
+        if (lista) {
+            lista.innerHTML = `
+                <p class="estado-vazio">
+                    Volte ao Diário para escolher outra pasta.
+                </p>
+            `;
+        }
+        if (contador) contador.textContent = '0 arquivos';
         return;
     }
 
-    const titulo = document.getElementById('titulo-post').value.trim();
-    const categoria = document.getElementById('categoria-post').value.trim();
-    const conteudo = document.getElementById('conteudo-post').value.trim();
-    const imagens = Array.from(document.querySelectorAll('.campo-imagem')).map((i) => i.value.trim()).filter(Boolean);
-    const pastaId = pastaPostSelect.value || null;
-    const visivelPara = obterVisibilidadeSelecionada();
+    if (titulo) titulo.textContent = pastaAtual.nome;
+    if (breadcrumbPasta) breadcrumbPasta.textContent = pastaAtual.nome;
+    if (meta) {
+        meta.textContent =
+            `Criada por ${pastaAtual.criado_por || 'desconhecido'}`;
+    }
 
-    if (!titulo || !conteudo) return;
+    if (novoNaPasta) {
+        novoNaPasta.href = urlComUsuario(
+            './registro.html',
+            { pasta: pastaAtual.id }
+        );
+    }
 
-    botaoPublicar.disabled = true;
+    if (excluir && podeExcluirPasta(pastaAtual)) {
+        excluir.hidden = false;
+        excluir.dataset.excluirPasta = pastaAtual.id;
+    }
 
-    const dados = {
-        titulo,
-        categoria: categoria || null,
-        conteudo,
-        imagens: imagens.length ? imagens : null,
-        pasta_id: pastaId,
-        visivel_para: visivelPara,
-    };
+    const documentos = postsCache.filter(
+        (post) => podeVer(post) && post.pasta_id === pastaAtual.id
+    );
 
-    const resultado = editandoId
-        ? await supabaseClient.from('posts').update(dados).eq('id', editandoId)
-        : await supabaseClient.from('posts').insert({ ...dados, autor: usuario });
+    if (contador) {
+        contador.textContent =
+            `${documentos.length} arquivo(s) visível(is)`;
+    }
 
-    botaoPublicar.disabled = false;
+    if (lista) {
+        lista.innerHTML = documentos.length
+            ? documentos.map(renderizarDocumento).join('')
+            : `
+                <p class="estado-vazio">
+                    Esta pasta ainda não possui documentos visíveis.
+                </p>
+            `;
+    }
+}
 
-    if (resultado.error) {
-        console.error('Erro ao salvar:', resultado.error);
-        alert('Não deu pra salvar — veja o console (F12) pra mais detalhes.');
+async function atualizarTela() {
+    try {
+        await carregarDados();
+
+        if (pagina === 'pasta') {
+            renderizarPasta();
+        } else {
+            renderizarHub();
+        }
+    } catch (erro) {
+        console.error('Erro ao carregar Diário:', erro);
+
+        const alvos = [
+            document.getElementById('grade-pastas'),
+            document.getElementById('lista-documentos-avulsos'),
+            document.getElementById('lista-documentos-pasta')
+        ].filter(Boolean);
+
+        alvos.forEach((alvo) => {
+            alvo.innerHTML = `
+                <p class="estado-vazio">
+                    Não foi possível carregar os dados. Veja o console (F12).
+                </p>
+            `;
+        });
+    }
+}
+
+document.addEventListener('click', async (evento) => {
+    const documentoClicado = evento.target.closest('[data-abrir-post]');
+    const controleClicado = evento.target.closest(
+        'a, button, input, textarea, select, label'
+    );
+
+    if (documentoClicado && !controleClicado) {
+        abrirDocumentoCompleto(documentoClicado.dataset.abrirPost);
         return;
     }
 
-    cancelarEdicao();
-    await carregarPosts();
+    const novaPasta = evento.target.closest('#nova-pasta');
+
+    if (novaPasta) {
+        await criarPasta();
+        return;
+    }
+
+    const excluirPastaBotao = evento.target.closest('[data-excluir-pasta]');
+
+    if (excluirPastaBotao) {
+        await excluirPasta(excluirPastaBotao.dataset.excluirPasta);
+        return;
+    }
+
+    const excluirPostBotao = evento.target.closest('[data-post-id]');
+
+    if (excluirPostBotao) {
+        await excluirPost(excluirPostBotao.dataset.postId);
+    }
 });
 
-carregarPastas();
-carregarPosts();
+
+function abrirDocumentoCompleto(id) {
+    if (!id) return;
+
+    window.location.href = urlComUsuario(
+        './leitura.html',
+        { arquivo: id }
+    );
+}
+
+document.addEventListener('keydown', (evento) => {
+    const documento = evento.target.closest?.('[data-abrir-post]');
+
+    if (!documento) return;
+
+    if (evento.key === 'Enter' || evento.key === ' ') {
+        evento.preventDefault();
+        abrirDocumentoCompleto(documento.dataset.abrirPost);
+    }
+});
+
+configurarNavegacao();
+atualizarTela();
