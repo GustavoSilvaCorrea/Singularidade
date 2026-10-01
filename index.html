@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <a href="#" id="nova-ficha" class="link-utilitario">+ nova ficha</a>
+    <main>
+        <div class="fichaContainer">
+            <span class="marca tl"></span>
+            <span class="marca tr"></span>
+            <span class="marca bl"></span>
+            <span class="marca br"></span>
+
+            <div class="tela">
+                <svg class="planeta" viewBox="0 0 200 200" aria-hidden="true">
+                    <circle cx="100" cy="100" r="55" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="M 45 85 Q 100 100 155 85" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M 45 115 Q 100 100 155 115" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <ellipse cx="100" cy="100" rx="95" ry="28" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(-18 100 100)" />
+                    <circle cx="190" cy="72" r="3" fill="currentColor" />
+                    <circle cx="12" cy="128" r="2" fill="currentColor" />
+                </svg>
+
+                <div class="icone"></div>
+
+                <div class="bloco">
+                    <h2>Nome</h2>
+                    <input type="text" class="campo-linha" name="nome">
+                </div>
+
+                <div class="corpo">
+                    <section class="coluna">
+                        <div class="bloco">
+                            <h2>Características</h2>
+                            <textarea class="campo-pautado" name="caracteristicas" rows="14"></textarea>
+                        </div>
+                    </section>
+
+                    <div class="divisoria"></div>
+
+                    <section class="coluna">
+                        <div class="bloco">
+                            <h2>Inventário</h2>
+                            <textarea class="campo-pautado" name="inventario" rows="14"></textarea>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="bloco">
+                    <h2>Características especiais</h2>
+                    <textarea class="campo-pautado" name="caracteristicasEspeciais" rows="2"></textarea>
+                </div>
+
+                <div class="conviccao">
+                    <h2>Sanidade</h2>
+                    <div class="barra">
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                        <button type="button" class="segmento"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
+</body>
+
+</html>
