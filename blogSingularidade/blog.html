@@ -4,14 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05050a">
+
     <title>Diário de Bordo</title>
-    <link rel="stylesheet" href="diario.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./diario.css?v=6">
 </head>
 
-<body>
+<body data-pagina="diario">
+
+    <a
+        href="./home.html"
+        class="botao-voltar-home"
+        id="voltar-home"
+        aria-label="Voltar para a Home"
+    >
+        ← VOLTAR
+    </a>
+
     <header class="cabecalho-doc">
         <div class="emblema-titulo">
-            <svg class="emblema" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6">
+            <svg class="emblema" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
                 <circle cx="30" cy="30" r="27" />
                 <path d="M30 14 L16 34 M30 14 L44 34 M16 34 L44 34 M16 34 L30 44 M44 34 L30 44" stroke-width="1" />
                 <circle cx="30" cy="14" r="2.4" fill="currentColor" stroke="none" />
@@ -19,73 +39,68 @@
                 <circle cx="44" cy="34" r="2.4" fill="currentColor" stroke="none" />
                 <circle cx="30" cy="44" r="2" fill="currentColor" stroke="none" />
             </svg>
-            <h1>Diário de Bordo</h1>
+
+            <div>
+                <h1>Diário de Bordo</h1>
+            </div>
         </div>
+
         <div class="usuario-assinatura">
             <span class="assinatura" id="nome-usuario">—</span>
-            <a href="index.html" class="sair">sair</a>
+            <a href="./index.html" class="sair">sair</a>
         </div>
     </header>
 
-    <nav class="barra-pastas" id="barra-pastas">
-        <button type="button" class="pilula-pasta ativa" data-pasta="">Todos os documentos</button>
-        <button type="button" class="pilula-pasta pilula-nova" id="nova-pasta">+ nova pasta</button>
-    </nav>
+    <main class="diario-shell">
+        <nav class="breadcrumb" aria-label="Caminho">
+            <a id="breadcrumb-home" href="./home.html">HOME</a>
+            <span class="breadcrumb-separador">/</span>
+            <span>DIÁRIO</span>
+        </nav>
 
-    <section class="painel-novo">
-        <h2>Registrar Novo Documento</h2>
-        <form id="form-post">
-            <div class="campo">
-                <label for="titulo-post">Título</label>
-                <input type="text" id="titulo-post" required>
-            </div>
-            <div class="campo campo-linha-dupla">
-                <div>
-                    <label for="categoria-post">Categoria</label>
-                    <input type="text" id="categoria-post" placeholder="Registro, Alerta, Descoberta...">
-                </div>
-                <div>
-                    <label for="pasta-post">Pasta</label>
-                    <select id="pasta-post">
-                        <option value="">Sem pasta</option>
-                    </select>
-                </div>
-            </div>
-            <div class="campo">
-                <label>Imagens (opcional)</label>
-                <div id="lista-imagens-input" class="lista-imagens-input">
-                    <div class="linha-imagem">
-                        <input type="url" class="campo-imagem" placeholder="https://...">
-                        <button type="button" class="remover-imagem" aria-label="Remover imagem">×</button>
-                    </div>
-                </div>
-                <button type="button" id="add-imagem" class="btn-secundario">+ adicionar imagem</button>
-            </div>
-            <div class="campo">
-                <label>Classificação de Acesso</label>
-                <label class="opcao-checkbox">
-                    <input type="checkbox" id="vis-todos" checked>
-                    Acesso público (visível a todos os registrados)
-                </label>
-                <div id="lista-personagens-vis" class="lista-personagens-vis"></div>
-            </div>
-            <div class="campo">
-                <label for="conteudo-post">Conteúdo</label>
-                <textarea id="conteudo-post" rows="6" required></textarea>
-            </div>
-            <div class="acoes-form">
-                <button type="submit" class="btn-selo">Publicar</button>
-                <button type="button" id="cancelar-edicao" class="btn-secundario" hidden>Cancelar edição</button>
-            </div>
-        </form>
-    </section>
+        <nav class="diario-tabs" aria-label="Áreas do Diário">
+            <a class="diario-tab ativa" href="#pastas">Pastas</a>
+            <a class="diario-tab" href="#arquivos">Arquivos avulsos</a>
+            <a class="diario-tab novo-arquivo" id="link-novo-documento" href="./registro.html">
+                + Criar novo arquivo
+            </a>
+        </nav>
 
-    <main class="lista-documentos" id="lista-documentos">
-        <p class="carregando">Carregando registros...</p>
+        <section class="secao-diario" id="pastas">
+            <div class="secao-cabecalho">
+                <div>
+                    <h2>Pastas</h2>
+                    <p>Organize os registros por assunto, missão ou local.</p>
+                </div>
+
+                <div class="acoes-secao">
+                    <button type="button" class="btn-interface" id="nova-pasta">
+                        + Nova pasta
+                    </button>
+                </div>
+            </div>
+
+            <div class="grade-pastas" id="grade-pastas">
+                <p class="estado-vazio">Carregando pastas...</p>
+            </div>
+        </section>
+
+        <section class="secao-diario" id="arquivos">
+            <div class="secao-cabecalho">
+                <div>
+                    <h2>Arquivos avulsos</h2>
+                    <p>Documentos que ainda não pertencem a nenhuma pasta.</p>
+                </div>
+            </div>
+
+            <div class="lista-documentos diario-lista" id="lista-documentos-avulsos">
+                <p class="estado-vazio">Carregando arquivos...</p>
+            </div>
+        </section>
     </main>
 
     <footer class="rodape-doc">
-        <svg class="emblema emblema-pequeno" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6">
+        <svg class="emblema emblema-pequeno" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
             <circle cx="30" cy="30" r="27" />
             <path d="M30 14 L16 34 M30 14 L44 34 M16 34 L44 34 M16 34 L30 44 M44 34 L30 44" stroke-width="1" />
             <circle cx="30" cy="14" r="2.4" fill="currentColor" stroke="none" />
@@ -93,12 +108,16 @@
             <circle cx="44" cy="34" r="2.4" fill="currentColor" stroke="none" />
             <circle cx="30" cy="44" r="2" fill="currentColor" stroke="none" />
         </svg>
-        <p>O acesso a este registro é restrito a pessoal autorizado. Compartilhamento não autorizado do conteúdo aqui
-            presente está sujeito às penalidades previstas.</p>
+
+        <p>
+            O acesso a este registro é restrito a pessoal autorizado.
+            Compartilhamento não autorizado do conteúdo aqui presente está sujeito às penalidades previstas.
+        </p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="blog.js" defer></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./blog.js" defer></script>
 </body>
 
 </html>
