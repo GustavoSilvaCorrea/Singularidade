@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+    --painel: #0b0b16;
+    --tinta: #e4e4e4;
+    --ciano: #22d3ee;
+    --magenta: #c026d3;
+    --linha: rgba(148, 226, 245, 0.16);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Share Tech Mono', monospace;
+    background-color: #05050a;
+    background-image:
+        radial-gradient(ellipse 900px 600px at 8% 8%, rgba(192, 38, 211, 0.22), transparent 60%),
+        radial-gradient(ellipse 900px 600px at 92% 92%, rgba(34, 211, 238, 0.2), transparent 60%),
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: auto, auto, 40px 40px, 40px 40px;
+    background-attachment: fixed;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 3.5rem 1rem;
+}
+
+.link-utilitario {
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--ciano);
+    text-decoration: none;
+    opacity: 0.75;
+    z-index: 10;
+    padding: 4px 10px;
+    border: 1px solid var(--ciano);
+    border-radius: 2px;
+    background: rgba(11, 11, 22, 0.6);
+    transition: opacity 0.15s ease;
+}
+.link-utilitario:hover {
+    opacity: 1;
+}
+
+.fichaContainer {
+    position: relative;
+    width: min(900px, 100%);
+}
+
+/* o "tablet" em si: painel escuro, borda em degradê neon e cantos chanfrados */
+.tela {
+    position: relative;
+    padding: 3.5rem 3rem 2.5rem;
+    color: var(--tinta);
+    background:
+        linear-gradient(180deg, var(--painel), #05050a) padding-box,
+        conic-gradient(from 45deg, var(--magenta), var(--ciano), var(--magenta), var(--ciano), var(--magenta)) border-box;
+    border: 3px solid transparent;
+    clip-path: polygon(
+        36px 0, calc(100% - 36px) 0, 100% 36px,
+        100% calc(100% - 36px), calc(100% - 36px) 100%, 36px 100%,
+        0 calc(100% - 36px), 0 36px
+    );
+    filter: drop-shadow(0 0 16px rgba(192, 38, 211, 0.35)) drop-shadow(0 0 24px rgba(34, 211, 238, 0.25));
+    animation: respirar 4s ease-in-out infinite;
+}
+
+@keyframes respirar {
+    0%, 100% { filter: drop-shadow(0 0 14px rgba(192, 38, 211, 0.3)) drop-shadow(0 0 20px rgba(34, 211, 238, 0.2)); }
+    50% { filter: drop-shadow(0 0 22px rgba(192, 38, 211, 0.5)) drop-shadow(0 0 30px rgba(34, 211, 238, 0.38)); }
+}
+
+/* grade sutil de fundo, tipo tela ligada */
+.tela::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* nós de circuito soltos nos cantos, por fora do painel chanfrado */
+.marca {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-width: 2px;
+    border-style: solid;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+.marca.tl { top: -14px; left: -14px; border-color: var(--magenta); border-right: none; border-bottom: none; }
+.marca.tr { top: -14px; right: -14px; border-color: var(--ciano); border-left: none; border-bottom: none; }
+.marca.bl { bottom: -14px; left: -14px; border-color: var(--ciano); border-right: none; border-top: none; }
+.marca.br { bottom: -14px; right: -14px; border-color: var(--magenta); border-left: none; border-top: none; }
+
+.marca::before {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor, 0 0 2px currentColor;
+}
+.marca.tl::before { top: -2px; left: -2px; }
+.marca.tr::before { top: -2px; right: -2px; }
+.marca.bl::before { bottom: -2px; left: -2px; }
+.marca.br::before { bottom: -2px; right: -2px; }
+
+.icone {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -85%);
+    margin: 0;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.5rem;
+    line-height: 1.15;
+    white-space: pre;
+    text-align: left;
+    color: var(--magenta);
+    pointer-events: none;
+}
+
+/* logo do planeta, no meio da ficha, atrás de todo o conteúdo */
+.planeta {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+    color: var(--ciano);
+    opacity: 0.14;
+    z-index: -1;
+    pointer-events: none;
+    filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.5));
+}
+
+h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 0.7rem;
+    padding-bottom: 0.5rem;
+    color: var(--ciano);
+    text-shadow: 0 0 8px rgba(34, 211, 238, 0.55);
+    border-bottom: 1px solid var(--ciano);
+    box-shadow: 0 1px 6px rgba(34, 211, 238, 0.3);
+}
+
+.corpo {
+    display: grid;
+    grid-template-columns: 1fr 2px 1fr;
+    column-gap: 2rem;
+    margin: 1.8rem 0;
+}
+
+.divisoria {
+    background: linear-gradient(to bottom, transparent, var(--ciano), var(--magenta), transparent);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.35);
+}
+
+.bloco {
+    margin-bottom: 1.8rem;
+}
+
+.campo-linha {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ciano);
+    text-align: center;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--tinta);
+    padding: 0.3rem 0;
+}
+
+.campo-linha:focus-visible,
+.campo-pautado:focus-visible {
+    outline: none;
+    box-shadow: 0 2px 10px rgba(34, 211, 238, 0.5);
+}
+
+/* efeito de "folha pautada" atrás do texto, acompanha o textarea ao rolar */
+.campo-pautado {
+    display: block;
+    width: 100%;
+    resize: vertical;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--tinta);
+    line-height: 30px;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 29px,
+        var(--linha) 29px,
+        var(--linha) 30px
+    );
+    background-attachment: local;
+}
+
+.conviccao {
+    margin-top: 1rem;
+}
+
+.barra {
+    display: flex;
+    gap: 4px;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0.5rem 0;
+}
+
+.segmento {
+    flex: 1;
+    height: 22px;
+    border: 2px solid var(--ciano);
+    background-color: var(--painel);
+    box-shadow: 0 0 5px rgba(34, 211, 238, 0.4);
+    padding: 0;
+    cursor: pointer;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.segmento.preenchido {
+    background-color: var(--magenta);
+    border-color: var(--magenta);
+    box-shadow: 0 0 10px var(--magenta), 0 0 4px var(--magenta);
+}
+
+.segmento:focus-visible {
+    outline: 2px dashed var(--ciano);
+    outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+    .corpo {
+        grid-template-columns: 1fr;
+    }
+    .divisoria {
+        display: none;
+    }
+    .icone {
+        font-size: 0.3rem;
+    }
+    .planeta {
+        width: 180px;
+        height: 180px;
+    }
+    .tela {
+        clip-path: polygon(
+            22px 0, calc(100% - 22px) 0, 100% 22px,
+            100% calc(100% - 22px), calc(100% - 22px) 100%, 22px 100%,
+            0 calc(100% - 22px), 0 22px
+        );
+    }
+}
