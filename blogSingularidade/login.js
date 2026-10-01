@@ -1,6 +1,5 @@
-// Login simples, sem backend de autenticação — combina com o clima "in RPG" do pedido.
-// Isso NÃO é seguro de verdade: qualquer um que abrir o código-fonte (F12) vê as senhas.
-// Serve pra afastar visitante casual, não pra proteger nada sensível.
+// Login simples do projeto.
+// O personagem autenticado é enviado na URL para a página seguinte.
 const CONTAS = {
     harvey: '001',
     maggie: '002',
@@ -23,8 +22,9 @@ form.addEventListener('submit', (evento) => {
 
     if (CONTAS[chave] && CONTAS[chave] === senhaDigitada) {
         const nomeFormatado = chave.charAt(0).toUpperCase() + chave.slice(1);
-        // Sem cookies/localStorage — o login "viaja" pela própria URL da página seguinte.
-        window.location.href = `blog.html?usuario=${encodeURIComponent(nomeFormatado)}`;
+
+        // Agora o login abre primeiro o terminal HOME.
+        window.location.href = `home.html?usuario=${encodeURIComponent(nomeFormatado)}`;
     } else {
         mensagemErro.classList.add('visivel');
     }
