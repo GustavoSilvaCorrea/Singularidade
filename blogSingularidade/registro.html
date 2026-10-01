@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05050a">
+
+    <title>Novo Arquivo — Diário de Bordo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./diario.css?v=6">
+</head>
+
+<body>
+
+    <a
+        href="./home.html"
+        class="botao-voltar-home"
+        id="voltar-home"
+        aria-label="Voltar para a Home"
+    >
+        ← VOLTAR
+    </a>
+
+    <header class="cabecalho-doc">
+        <div class="emblema-titulo">
+            <svg class="emblema" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <circle cx="30" cy="30" r="27" />
+                <path d="M30 14 L16 34 M30 14 L44 34 M16 34 L44 34 M16 34 L30 44 M44 34 L30 44" stroke-width="1" />
+                <circle cx="30" cy="14" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="34" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="44" cy="34" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="30" cy="44" r="2" fill="currentColor" stroke="none" />
+            </svg>
+
+            <h1>Editor de Registro</h1>
+        </div>
+
+        <div class="usuario-assinatura">
+            <span class="assinatura" id="nome-usuario">—</span>
+            <a href="./index.html" class="sair">sair</a>
+        </div>
+    </header>
+
+    <main class="editor-shell">
+        <nav class="breadcrumb" aria-label="Caminho">
+            <a id="breadcrumb-home" href="./home.html">HOME</a>
+            <span class="breadcrumb-separador">/</span>
+            <a id="breadcrumb-diario" href="./blog.html">DIÁRIO</a>
+            <span class="breadcrumb-separador">/</span>
+            <span id="breadcrumb-editor">NOVO ARQUIVO</span>
+        </nav>
+
+        <section class="painel-novo">
+            <h2 id="titulo-editor">Registrar Novo Documento</h2>
+
+            <form id="form-post">
+                <div class="campo">
+                    <label for="titulo-post">Título</label>
+                    <input type="text" id="titulo-post" autocomplete="off" required>
+                </div>
+
+                <div class="campo campo-linha-dupla">
+                    <div>
+                        <label for="categoria-post">Categoria</label>
+                        <input
+                            type="text"
+                            id="categoria-post"
+                            placeholder="Registro, Alerta, Descoberta..."
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="pasta-post">Pasta</label>
+                        <select id="pasta-post">
+                            <option value="">Sem pasta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Imagens (opcional)</label>
+
+                    <div class="bloco-imagens">
+                        <div id="lista-imagens-input" class="lista-imagens-input">
+                            <div class="linha-imagem">
+                                <input
+                                    type="url"
+                                    class="campo-imagem"
+                                    placeholder="https://..."
+                                    inputmode="url"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="remover-imagem"
+                                    aria-label="Remover URL da imagem"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="imagem-acoes">
+                            <button type="button" id="add-imagem" class="btn-anexar">
+                                + adicionar URL
+                            </button>
+
+                            <label for="arquivos-imagem" class="btn-anexar">
+                                ⤒ anexar do computador
+                            </label>
+
+                            <input
+                                type="file"
+                                id="arquivos-imagem"
+                                class="input-arquivos-escondido"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                multiple
+                            >
+
+                            <span class="dica-imagem">
+                                JPG, PNG, WEBP ou GIF · até 8 MB por imagem
+                            </span>
+                        </div>
+
+                        <div id="arquivos-selecionados" class="arquivos-selecionados"></div>
+
+                        <p id="upload-progresso" class="upload-progresso">
+                            Enviando imagens...
+                        </p>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label>Classificação de Acesso</label>
+
+                    <label class="opcao-checkbox">
+                        <input type="checkbox" id="vis-todos" checked>
+                        <span>Acesso público (visível a todos os registrados)</span>
+                    </label>
+
+                    <div id="lista-personagens-vis" class="lista-personagens-vis"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="conteudo-post">Conteúdo</label>
+                    <textarea id="conteudo-post" rows="12" required></textarea>
+                </div>
+
+                <div class="acoes-form">
+                    <button type="submit" class="btn-selo" id="publicar">
+                        Publicar
+                    </button>
+
+                    <button type="button" id="cancelar" class="btn-secundario">
+                        Cancelar
+                    </button>
+                </div>
+
+                <p id="editor-status" class="editor-status" role="status"></p>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./registro.js" defer></script>
+</body>
+
+</html>
