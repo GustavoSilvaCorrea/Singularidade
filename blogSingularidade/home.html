@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05050a">
+
+    <title>Singularidade — Terminal Central</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./home.css?v=1">
+</head>
+
+<body>
+
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <main class="home-shell">
+
+        <div class="terminal">
+            <span class="marca tl" aria-hidden="true"></span>
+            <span class="marca tr" aria-hidden="true"></span>
+            <span class="marca bl" aria-hidden="true"></span>
+            <span class="marca br" aria-hidden="true"></span>
+
+            <svg class="planeta-fundo" viewBox="0 0 260 260" aria-hidden="true">
+                <circle cx="130" cy="130" r="67" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M 63 112 Q 130 130 197 112" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M 63 148 Q 130 130 197 148" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                <ellipse
+                    cx="130"
+                    cy="130"
+                    rx="116"
+                    ry="35"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    transform="rotate(-18 130 130)"
+                />
+                <circle cx="238" cy="94" r="3.5" fill="currentColor"/>
+                <circle cx="22" cy="167" r="2.5" fill="currentColor"/>
+            </svg>
+
+            <header class="topo-home">
+                <div>
+                    <p class="eyebrow">SISTEMA // SINGULARIDADE</p>
+                    <h1>Terminal Central</h1>
+                    <p class="subtitulo">
+                        Interface de acesso aos sistemas da campanha.
+                    </p>
+                </div>
+
+                <div class="usuario-box">
+                    <span class="usuario-label">Tripulante autenticado</span>
+                    <strong id="nome-usuario">—</strong>
+                    <a href="./index.html" class="sair">encerrar sessão</a>
+                </div>
+            </header>
+
+            <section class="status-sistema" aria-label="Status do sistema">
+                <div class="status-item">
+                    <span class="status-luz"></span>
+                    <span>CONEXÃO</span>
+                    <strong>ATIVA</strong>
+                </div>
+
+                <div class="status-item">
+                    <span>PROTOCOLO</span>
+                    <strong>Y2k3</strong>
+                </div>
+
+                <div class="status-item">
+                    <span>ACESSO</span>
+                    <strong>AUTORIZADO</strong>
+                </div>
+            </section>
+
+            <section class="modulos" aria-labelledby="titulo-modulos">
+                <div class="secao-topo">
+                    <div>
+                        <p class="secao-codigo">01 // NAVEGAÇÃO</p>
+                        <h2 id="titulo-modulos">Módulos disponíveis</h2>
+                    </div>
+
+                    <p class="secao-descricao">
+                        Selecione um sistema para continuar.
+                    </p>
+                </div>
+
+                <div class="grade-modulos">
+
+                    <a class="modulo modulo-ativo" id="link-ficha" href="../ficha/index.html">
+                        <div class="modulo-numero">01</div>
+
+                        <div class="modulo-icone" aria-hidden="true">
+                            <svg viewBox="0 0 64 64">
+                                <path d="M15 8h27l8 8v40H15z"/>
+                                <path d="M42 8v10h8"/>
+                                <path d="M22 28h21M22 36h21M22 44h13"/>
+                            </svg>
+                        </div>
+
+                        <div class="modulo-conteudo">
+                            <span class="modulo-status">ONLINE</span>
+                            <h3>Ficha da Tripulação</h3>
+                            <p>
+                                Acesse as fichas e registros individuais dos personagens.
+                            </p>
+                        </div>
+
+                        <span class="modulo-seta" aria-hidden="true">→</span>
+                    </a>
+
+                    <a class="modulo modulo-ativo" id="link-diario" href="./blog.html">
+                        <div class="modulo-numero">02</div>
+
+                        <div class="modulo-icone" aria-hidden="true">
+                            <svg viewBox="0 0 64 64">
+                                <path d="M14 10h32a5 5 0 0 1 5 5v39H19a5 5 0 0 1-5-5z"/>
+                                <path d="M19 10v44"/>
+                                <path d="M26 22h17M26 30h17M26 38h12"/>
+                            </svg>
+                        </div>
+
+                        <div class="modulo-conteudo">
+                            <span class="modulo-status">ONLINE</span>
+                            <h3>Diário de Bordo</h3>
+                            <p>
+                                Consulte, escreva e organize documentos da campanha.
+                            </p>
+                        </div>
+
+                        <span class="modulo-seta" aria-hidden="true">→</span>
+                    </a>
+
+                    <article class="modulo modulo-bloqueado" aria-disabled="true">
+                        <div class="modulo-numero">03</div>
+
+                        <div class="modulo-icone" aria-hidden="true">
+                            <svg viewBox="0 0 64 64">
+                                <circle cx="32" cy="32" r="19"/>
+                                <path d="M13 32h38M32 13c7 7 10 13 10 19S39 44 32 51M32 13c-7 7-10 13-10 19s3 12 10 19"/>
+                            </svg>
+                        </div>
+
+                        <div class="modulo-conteudo">
+                            <span class="modulo-status aguardando">EM DESENVOLVIMENTO</span>
+                            <h3>Cartografia Planetária</h3>
+                            <p>
+                                Espaço reservado para planetas, locais e informações de exploração.
+                            </p>
+                        </div>
+
+                        <span class="modulo-bloqueio">// OFFLINE</span>
+                    </article>
+
+                    <article class="modulo modulo-bloqueado" aria-disabled="true">
+                        <div class="modulo-numero">04</div>
+
+                        <div class="modulo-icone" aria-hidden="true">
+                            <svg viewBox="0 0 64 64">
+                                <path d="M10 19h18l5 6h21v27H10z"/>
+                                <path d="M10 19v-7h17l5 7"/>
+                                <path d="M23 34h18M23 42h13"/>
+                            </svg>
+                        </div>
+
+                        <div class="modulo-conteudo">
+                            <span class="modulo-status aguardando">EM DESENVOLVIMENTO</span>
+                            <h3>Novo Módulo</h3>
+                            <p>
+                                Área reservada para uma futura função do sistema.
+                            </p>
+                        </div>
+
+                        <span class="modulo-bloqueio">// OFFLINE</span>
+                    </article>
+
+                </div>
+            </section>
+
+            <footer class="rodape-home">
+                <span>SINGULARIDADE // TERMINAL DE OPERAÇÕES</span>
+                <span id="codigo-sessao">SESSÃO // ---</span>
+            </footer>
+        </div>
+
+    </main>
+
+    <script src="./home.js" defer></script>
+</body>
+
+</html>
