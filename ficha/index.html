@@ -9,6 +9,15 @@
 </head>
 
 <body>
+    <a
+        href="../blogSingularidade/home.html"
+        id="voltar-home"
+        class="link-voltar"
+        aria-label="Voltar para a página inicial"
+    >
+        ← VOLTAR
+    </a>
+
     <a href="#" id="nova-ficha" class="link-utilitario">+ nova ficha</a>
     <main>
         <div class="fichaContainer">
@@ -78,6 +87,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js" defer></script>
+
+    <script>
+        (() => {
+            const params = new URLSearchParams(window.location.search);
+            const usuario = params.get('usuario');
+            const botaoVoltar = document.getElementById('voltar-home');
+
+            if (botaoVoltar && usuario) {
+                botaoVoltar.href =
+                    `../blogSingularidade/home.html?usuario=${encodeURIComponent(usuario)}`;
+            }
+        })();
+    </script>
+
 </body>
 
 </html>

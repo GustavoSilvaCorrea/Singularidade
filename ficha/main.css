@@ -289,3 +289,59 @@ h2 {
         );
     }
 }
+
+/* ── botão para voltar ao terminal HOME ─────────────────── */
+.link-voltar {
+    position: fixed;
+    top: 12px;
+    left: 16px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 4px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ciano);
+    text-decoration: none;
+    opacity: 0.78;
+    border: 1px solid var(--ciano);
+    border-radius: 2px;
+    background: rgba(11, 11, 22, 0.72);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.12);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.link-voltar:hover {
+    opacity: 1;
+    transform: translateX(-2px);
+    background: rgba(11, 11, 22, 0.94);
+    box-shadow: 0 0 14px rgba(34, 211, 238, 0.30);
+}
+
+.link-voltar:focus-visible {
+    outline: 2px dashed var(--ciano);
+    outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+    .link-voltar {
+        top: 8px;
+        left: 8px;
+        padding: 4px 8px;
+        font-size: 0.68rem;
+    }
+
+    .link-utilitario {
+        top: 8px;
+        right: 8px;
+    }
+}
+
