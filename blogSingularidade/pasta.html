@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05050a">
+
+    <title>Pasta — Diário de Bordo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./diario.css?v=6">
+</head>
+
+<body data-pagina="pasta">
+
+    <a
+        href="./home.html"
+        class="botao-voltar-home"
+        id="voltar-home"
+        aria-label="Voltar para a Home"
+    >
+        ← VOLTAR
+    </a>
+
+    <header class="cabecalho-doc">
+        <div class="emblema-titulo">
+            <svg class="emblema" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <circle cx="30" cy="30" r="27" />
+                <path d="M30 14 L16 34 M30 14 L44 34 M16 34 L44 34 M16 34 L30 44 M44 34 L30 44" stroke-width="1" />
+                <circle cx="30" cy="14" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="34" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="44" cy="34" r="2.4" fill="currentColor" stroke="none" />
+                <circle cx="30" cy="44" r="2" fill="currentColor" stroke="none" />
+            </svg>
+
+            <h1>Diário de Bordo</h1>
+        </div>
+
+        <div class="usuario-assinatura">
+            <span class="assinatura" id="nome-usuario">—</span>
+            <a href="./index.html" class="sair">sair</a>
+        </div>
+    </header>
+
+    <main class="diario-shell">
+        <nav class="breadcrumb" aria-label="Caminho">
+            <a id="breadcrumb-home" href="./home.html">HOME</a>
+            <span class="breadcrumb-separador">/</span>
+            <a id="breadcrumb-diario" href="./blog.html">DIÁRIO</a>
+            <span class="breadcrumb-separador">/</span>
+            <span id="breadcrumb-pasta">PASTA</span>
+        </nav>
+
+        <section class="pasta-detalhes">
+            <div class="pasta-detalhes-topo">
+                <div>
+                    <span class="pasta-codigo">DIRETÓRIO // ATIVO</span>
+                    <h2 id="titulo-pasta">Carregando pasta...</h2>
+                    <p id="meta-pasta"></p>
+                </div>
+
+                <div class="acoes-secao">
+                    <a class="btn-interface" id="novo-na-pasta" href="./registro.html">
+                        + Novo arquivo
+                    </a>
+
+                    <button type="button" class="btn-interface perigo" id="excluir-pasta" hidden>
+                        Excluir pasta
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao-diario">
+            <div class="secao-cabecalho">
+                <div>
+                    <h2>Arquivos da pasta</h2>
+                    <p id="contador-arquivos">Carregando...</p>
+                </div>
+            </div>
+
+            <div class="lista-documentos diario-lista" id="lista-documentos-pasta">
+                <p class="estado-vazio">Carregando documentos...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape-doc">
+        <svg class="emblema emblema-pequeno" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="30" cy="30" r="27" />
+            <path d="M30 14 L16 34 M30 14 L44 34 M16 34 L44 34 M16 34 L30 44 M44 34 L30 44" stroke-width="1" />
+            <circle cx="30" cy="14" r="2.4" fill="currentColor" stroke="none" />
+            <circle cx="16" cy="34" r="2.4" fill="currentColor" stroke="none" />
+            <circle cx="44" cy="34" r="2.4" fill="currentColor" stroke="none" />
+            <circle cx="30" cy="44" r="2" fill="currentColor" stroke="none" />
+        </svg>
+
+        <p>Diretório de registros da campanha // Singularidade.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./blog.js" defer></script>
+</body>
+
+</html>
